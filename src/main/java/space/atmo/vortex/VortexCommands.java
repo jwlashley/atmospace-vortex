@@ -41,7 +41,9 @@ public class VortexCommands {
                         )
         );
         // Register a shorter alias for convenience: /vx
-        dispatcher.register(Commands.literal("vx").redirect(modUsageCommand));
+        dispatcher.register(Commands.literal("vx")
+                .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
+                .redirect(modUsageCommand));
     }
 
     /**

@@ -34,10 +34,11 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 ## Installation (for Server Administrators)
 
 1.  **Download:** Get the latest `vortex-X.X.X.jar` from the [Releases page](link-to-your-releases-page-here).
+    - Or find it on Modrinth or CurseForge!
 
-2.  **Place:** Drop the JAR into your NeoForge 1.21.1 server's `mods` folder.
+3.  **Place:** Drop the JAR into your NeoForge 1.21.1 server's `mods` folder.
 
-3.  **Run:** Start your server.
+4.  **Run:** Start your server.
 
 ## Usage (for Server Administrators)
 

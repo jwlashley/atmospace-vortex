@@ -1,4 +1,11 @@
-# Vortex: NeoForge Mod Usage Analyzer
+# Vortex: NeoForge Mod Usage Analyzer 
+<p align="left">
+  <a href="https://github.com/jwlashley/atmospace-vortex"><img src="https://badgen.net/badge/Development/Active/green" /></a>
+  <a href=""><img src="https://badgen.net/badge/Stable/1.1.1/blue" /></a>
+  <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://badgen.net/badge/License/GPL3/red" /></a>
+  
+</p>
+
 Vortex is a server-side NeoForge mod that helps administrators understand and optimize their modpacks by tracking actual player engagement with modded content. Get clear data to streamline your modpack, reduce server load, and enhance player experience.
 
 ## Purpose & Why You Need It
@@ -33,11 +40,11 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 
 ## Installation (for Server Administrators)
 
-1.  **Download:** Get the latest `vortex-X.X.X.jar` from the [Releases page](link-to-your-releases-page-here).
+1.  **Download:** Get the latest `vortex-X.X.X.jar` from Modrinth or CurseForge
 
-2.  **Place:** Drop the JAR into your NeoForge 1.21.1 server's `mods` folder.
+3.  **Place:** Drop the JAR into your NeoForge 1.21.1 server's `mods` folder.
 
-3.  **Run:** Start your server.
+4.  **Run:** Start your server.
 
 ## Usage (for Server Administrators)
 
@@ -58,6 +65,9 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 ## Contributing
 
 Contributions are welcome! Report bugs, suggest features, or submit pull requests on the [GitHub repository](https://github.com/jwlashley/atmospace-vortex).
+
+Keep in mind a general sense of professional etiquette when collaborating within this repository. No one should be made to feel lesser due to lack of expertise on a subject.
+Please look over the [Contribution Guide](https://github.com/jwlashley/atmospace-vortex/blob/main/CONTRIBUTING.md) or [Community Code of Conduct](https://github.com/jwlashley/atmospace-vortex/tree/main?tab=coc-ov-file) if you need further explanation of this.
 
 ## License
 

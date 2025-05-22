@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate; // Import for date
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter; // Import for date formatting
 import java.util.Map;
 
@@ -18,7 +19,7 @@ import java.util.Map;
 public class DataExporter {
 
     // The base file name, the date will be prepended to it.
-    private static final String BASE_FILE_NAME = "vortex_mod_usage_data";
+    private static final String BASE_FILE_NAME = "vtx_usage_data";
     private static final String FILE_EXTENSION = ".csv";
     private static final String CONFIG_SUB_DIR = "vortex"; // Subdirectory within the server's config folder
 
@@ -48,9 +49,9 @@ public class DataExporter {
         }
 
         // Generate the current date in mm-dd-yyyy format
-        String dateString = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String dateTimeString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd.HH-mm"));
         // Construct the full file name with the date
-        String fileNameWithDate = BASE_FILE_NAME + "_" + dateString + FILE_EXTENSION;
+        String fileNameWithDate = BASE_FILE_NAME + "_" + dateTimeString + FILE_EXTENSION;
 
         // Define the full path for the output CSV file: <server_root>/config/vortex/vortex_mod_usage_data_mm-dd-yyyy.csv
         Path outputFile = configDir.resolve(fileNameWithDate);

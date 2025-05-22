@@ -1,21 +1,24 @@
 {
-description = "Atmospace-Vortex Development Flake";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  };
 
-inputs.nixpkgs.url = "nixpkgs/24.11";
-
-outputs = inputs:
-let
-	system = "x86_64-linux";
-	pkgs = inputs.nixpkgs.legacyPackages.${system};
-in {
-	devShell.${system} = pkgs.mkShell rec {
-		name = "java-shell";
-		buildInputs = with pkgs; [ jdk21_headless ];
-
-		shellHook = ''
-			export JAVA_HOME=${pkgs.jdk21_headless}
-			PATH="${pkgs.jdk21_headless}/bin:$PATH"
-		'';
-	};
-   };
+  outputs = { self, nixpkgs }:
+  
+  let 
+    pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    libs = with pkgs; [
+        libpulseaudio
+        libGL
+        glfw
+        openal
+        stdenv.cc.cc.lib
+      ];
+  in {
+    devShell.x86_64-linux = pkgs.mkShell {
+      packages = [];
+      buildInputs = libs;
+      LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
+    };
+  };
 }

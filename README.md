@@ -33,8 +33,7 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 
 ## Installation (for Server Administrators)
 
-1.  **Download:** Get the latest `vortex-X.X.X.jar` from the [Releases page](link-to-your-releases-page-here).
-    - Or find it on Modrinth or CurseForge!
+1.  **Download:** Get the latest `vortex-X.X.X.jar` from Modrinth or CurseForge
 
 3.  **Place:** Drop the JAR into your NeoForge 1.21.1 server's `mods` folder.
 
@@ -59,6 +58,9 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 ## Contributing
 
 Contributions are welcome! Report bugs, suggest features, or submit pull requests on the [GitHub repository](https://github.com/jwlashley/atmospace-vortex).
+
+Keep in mind a general sense of professional etiquette when collaborating within this repository. No one should be made to feel lesser due to lack of expertise on a subject.
+Please look over the [Community Code of Conduct](https://github.com/jwlashley/atmospace-vortex/tree/main?tab=coc-ov-file) if you need further explanation of this.
 
 ## License
 

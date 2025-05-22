@@ -1,25 +1,67 @@
+# Vortex: NeoForge Mod Usage Analyzer
 
-Installation information
-=======
+![Vortex Mod Icon](src/main/resources/pack.png)
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+Vortex is a server-side NeoForge mod that helps administrators understand and optimize their modpacks by tracking actual player engagement with modded content. Get clear data to streamline your modpack, reduce server load, and enhance player experience.
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+## Purpose & Why You Need It
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+Large modpacks can suffer from unused mods, leading to unnecessary server load and client lag. Vortex provides concrete usage statistics, allowing you to make data-driven decisions to optimize your modpack, ensuring it's lean, efficient, and tailored to your community's actual playstyle.
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+## Features
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+* **Modded Content Tracking:** Monitors player interactions with modded blocks, items, crafting, and entities.
+
+* **Vanilla Filter:** Automatically ignores vanilla Minecraft content for focused data.
+
+* **In-Game Summaries:** Use `/vortex` or `/vx` (OP 2+) for instant usage overviews in chat.
+
+* **CSV Export:** Generates detailed, timestamped CSV reports (`config/vortex/`) upon server shutdown for external analysis.
+
+* **Clear Data Command:** Reset in-memory statistics at any time with `/vortex clear`.
+
+## How It Works (Source Code Overview)
+
+Vortex leverages the NeoForge event system. Its modular design separates concerns into distinct Java classes:
+
+* **`Vortex.java`:** Main mod entry point; handles event bus and command registration.
+
+* **`VortexTracker.java`:** Manages in-memory storage for all usage counts.
+
+* **`VortexEventHandler.java`:** Listens for and processes specific in-game events (interactions, crafting, damage), filtering out vanilla content.
+
+* **`VortexCommands.java`:** Defines and handles the `/vortex` in-game command for summaries and data clearing.
+
+* **`DataExporter.java`:** Saves all collected usage data to a CSV file when the server stops.
+
+## Installation (for Server Administrators)
+
+1.  **Download:** Get the latest `vortex-X.X.X.jar` from the [Releases page](link-to-your-releases-page-here).
+
+2.  **Place:** Drop the JAR into your NeoForge 1.21.1 server's `mods` folder.
+
+3.  **Run:** Start your server.
+
+## Usage (for Server Administrators)
+
+* **In-Game Summary:** Type `/vortex` or `/vx` (OP level 2+).
+
+* **Clear Data:** Use `/vortex clear`.
+
+* **CSV Reports:** Find `vortex_mod_usage_data_MM-DD-YYYY.csv` in `config/vortex/` after server shutdown.
+
+## Building from Source (for Developers)
+
+1.  **Clone:** `git clone https://github.com/jwlashley/atmospace-vortex.git && cd atmospace-vortex`
+
+2.  **Setup:** Ensure NeoForge MDK for Minecraft 1.21.1 and JDK 21 are installed.
+
+3.  **Build:** `./gradlew clean build` (JAR in `build/libs/`).
+
+## Contributing
+
+Contributions are welcome! Report bugs, suggest features, or submit pull requests on the [GitHub repository](https://github.com/jwlashley/atmospace-vortex).
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). See the `LICENSE` file for details.

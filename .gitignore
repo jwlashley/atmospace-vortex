@@ -1,26 +1,25 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
-.classpath
-.project
+# Gradle files
+.gradle/
+/build/
+# Compiled class files
+*.class
 
-# idea
-out
-*.ipr
-*.iws
-*.iml
-.idea
+# Log files
+*.log
+logs/
 
-# gradle
-build
-.gradle
+# Generated resources (if data generation is used)
+/src/generated/
 
-# other
-eclipse
-run
-runs
-run-data
+# JAR files
+*.jar
+*.zip
+*.rar
 
-repo
+# Local run directories
+/run/
+
+# Other temporary files
+*.bak
+*.swp
+*~

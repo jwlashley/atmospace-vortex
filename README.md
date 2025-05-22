@@ -1,7 +1,4 @@
 # Vortex: NeoForge Mod Usage Analyzer
-
-![Vortex Mod Icon](src/main/resources/pack.png)
-
 Vortex is a server-side NeoForge mod that helps administrators understand and optimize their modpacks by tracking actual player engagement with modded content. Get clear data to streamline your modpack, reduce server load, and enhance player experience.
 
 ## Purpose & Why You Need It

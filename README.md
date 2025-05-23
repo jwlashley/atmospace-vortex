@@ -20,7 +20,7 @@ Large modpacks can suffer from unused mods, leading to unnecessary server load a
 
 * **In-Game Summaries:** Use `/vortex` or `/vx` (OP 2+) for instant usage overviews in chat.
 
-* **CSV Export:** Generates detailed, timestamped CSV reports (`config/vortex/`) upon server shutdown for external analysis.
+* **CSV Export:** Generates detailed, timestamped CSV reports (`config/vortex/`) upon server command and shutdown for external analysis.
 
 * **Clear Data Command:** Reset in-memory statistics at any time with `/vortex clear`.
 
@@ -34,9 +34,9 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 
 * **`VortexEventHandler.java`:** Listens for and processes specific in-game events (interactions, crafting, damage), filtering out vanilla content.
 
-* **`VortexCommands.java`:** Defines and handles the `/vortex` in-game command for summaries and data clearing.
+* **`VortexCommands.java`:** Defines and handles the `/vortex` in-game commands for summaries and data clearing.
 
-* **`DataExporter.java`:** Saves all collected usage data to a CSV file when the server stops.
+* **`DataExporter.java`:** Saves all collected usage data to a CSV file when requested or when the server stops.
 
 ## Installation (for Server Administrators)
 
@@ -52,7 +52,7 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 
 * **Clear Data:** Use `/vortex clear`.
 
-* **CSV Reports:** Find `vortex_mod_usage_data_MM-DD-YYYY.csv` in `config/vortex/` after server shutdown.
+* **CSV Reports:** Find `vortex_mod_usage_data_MM-DD-YYYY.csv` in `config/vortex/` after running the `/vx export` server shutdown.
 
 ## Building from Source (for Developers)
 

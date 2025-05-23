@@ -3,7 +3,7 @@
 /build/
 # Compiled class files
 *.class
-
+changelog.txt
 # Log files
 *.log
 logs/

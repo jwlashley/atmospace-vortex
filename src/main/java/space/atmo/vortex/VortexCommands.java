@@ -145,10 +145,9 @@ public class VortexCommands {
         source.sendSuccess(() -> Component.literal("--- Vortex Mod Help ---"), false);
         source.sendSuccess(() -> Component.literal("Vortex helps server administrators understand and optimize their modded servers."), false);
         source.sendSuccess(() -> Component.literal("Available Commands:"), false);
-        source.sendSuccess(() -> Component.literal("-/vortex or /vx (alias): Displays a comprehensive summary of mod usage statistics in chat."), false);
-        source.sendSuccess(() -> Component.literal("-/vx summary: Same as /vx"), false);
-        source.sendSuccess(() -> Component.literal("-/vx clear: Resets all in-memory usage statistics."), false);
-        source.sendSuccess(() -> Component.literal("-/vx help: Displays this help message."), false);
+        source.sendSuccess(() -> Component.literal("- /vx summary: Same as /vx"), false);
+        source.sendSuccess(() -> Component.literal("- /vx clear: Resets all in-memory usage statistics."), false);
+        source.sendSuccess(() -> Component.literal("- /vx help: Displays this help message."), false);
         return 1;
     }
 

@@ -5,6 +5,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands; 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -152,7 +153,7 @@ public class VortexCommands {
     }
 
     private static int exportDataCommand(CommandSourceStack source){
-        DataExporter.exportCommand();
+        DataExporter.exportCommand(source.getServer());
         source.sendSuccess(() -> Component.literal("Vortex data exported to content directory."), false);
         return 1;
     }

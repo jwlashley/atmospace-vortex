@@ -32,48 +32,50 @@ public class DataExporter {
      */
     @SubscribeEvent
     public static void onServerStopped(ServerStoppingEvent event) {
-        // Resolve the path to the specific config directory for the Vortex mod.
-        // This will be <server_root>/config/vortex/
-        Path configDir = event.getServer().getServerDirectory().resolve("config").resolve(CONFIG_SUB_DIR);
+        public static void exportCommand() {
+            // Resolve the path to the specific config directory for the Vortex mod.
+            // This will be <server_root>/config/vortex/
+            Path configDir = event.getServer().getServerDirectory().resolve("config").resolve(CONFIG_SUB_DIR);
 
-        // Create the directory if it doesn't exist to prevent file writing errors.
-        if (!java.nio.file.Files.exists(configDir)) {
-            try {
-                java.nio.file.Files.createDirectories(configDir);
-                System.out.println("Vortex: Created config directory: " + configDir.toAbsolutePath());
-            } catch (IOException e) {
-                System.err.println("Vortex: Failed to create config directory for mod usage data: " + e.getMessage());
-                e.printStackTrace();
-                return; // Exit if directory creation fails, as we can't save the file.
+            // Create the directory if it doesn't exist to prevent file writing errors.
+            if (!java.nio.file.Files.exists(configDir)) {
+                try {
+                    java.nio.file.Files.createDirectories(configDir);
+                    System.out.println("Vortex: Created config directory: " + configDir.toAbsolutePath());
+                } catch (IOException e) {
+                    System.err.println("Vortex: Failed to create config directory for mod usage data: " + e.getMessage());
+                    e.printStackTrace();
+                    return; // Exit if directory creation fails, as we can't save the file.
+                }
             }
-        }
 
-        // Generate the current date in mm-dd-yyyy format
-        String dateTimeString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd.HH-mm"));
-        // Construct the full file name with the date
-        String fileNameWithDate = BASE_FILE_NAME + "_" + dateTimeString + FILE_EXTENSION;
+            // Generate the current date in mm-dd-yyyy format
+            String dateTimeString = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd.HH-mm"));
+            // Construct the full file name with the date
+            String fileNameWithDate = BASE_FILE_NAME + "_" + dateTimeString + FILE_EXTENSION;
 
-        // Define the full path for the output CSV file: <server_root>/config/vortex/vortex_mod_usage_data_mm-dd-yyyy.csv
-        Path outputFile = configDir.resolve(fileNameWithDate);
+            // Define the full path for the output CSV file: <server_root>/config/vortex/vortex_mod_usage_data_mm-dd-yyyy.csv
+            Path outputFile = configDir.resolve(fileNameWithDate);
 
-        // Write data to the CSV file using a FileWriter.
-        // The try-with-resources statement ensures the writer is closed automatically.
-        try (FileWriter writer = new FileWriter(outputFile.toFile())) {
-            // Write the CSV Header row.
-            writer.append("Category,ModID,Count\n");
+            // Write data to the CSV file using a FileWriter.
+            // The try-with-resources statement ensures the writer is closed automatically.
+            try (FileWriter writer = new FileWriter(outputFile.toFile())) {
+                // Write the CSV Header row.
+                writer.append("Category,ModID,Count\n");
 
-            // Write data from each usage map, categorizing each entry.
-            // Ensure VortexTracker is correctly imported and its static maps are accessible.
-            writeMapToCSV(writer, VortexTracker.blockRightClickCounts, "BlockRightClick");
-            writeMapToCSV(writer, VortexTracker.itemRightClickCounts, "ItemRightClick");
-            writeMapToCSV(writer, VortexTracker.recipeCraftCounts, "CraftingOutput");
-            writeMapToCSV(writer, VortexTracker.entityDamageCounts, "EntityDamage");
+                // Write data from each usage map, categorizing each entry.
+                // Ensure VortexTracker is correctly imported and its static maps are accessible.
+                writeMapToCSV(writer, VortexTracker.blockRightClickCounts, "BlockRightClick");
+                writeMapToCSV(writer, VortexTracker.itemRightClickCounts, "ItemRightClick");
+                writeMapToCSV(writer, VortexTracker.recipeCraftCounts, "CraftingOutput");
+                writeMapToCSV(writer, VortexTracker.entityDamageCounts, "EntityDamage");
 
-            System.out.println("Vortex: Mod usage data successfully saved to: " + outputFile.toAbsolutePath());
+                System.out.println("Vortex: Mod usage data successfully saved to: " + outputFile.toAbsolutePath());
 
-        } catch (IOException e) {
-            System.err.println("Vortex: Error saving mod usage data to CSV: " + e.getMessage());
-            e.printStackTrace(); // Print stack trace for detailed error information.
+            } catch (IOException e) {
+                System.err.println("Vortex: Error saving mod usage data to CSV: " + e.getMessage());
+                e.printStackTrace(); // Print stack trace for detailed error information.
+            }
         }
     }
 

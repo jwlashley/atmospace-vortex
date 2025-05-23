@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static space.atmo.vortex.DataExporter.exportCommand;
+
 /**
  * Registers and handles in-game commands for the Vortex mod.
  * Provides a single summary command for all collected data,
@@ -41,6 +43,9 @@ public class VortexCommands {
                         )
                         .then(Commands.literal("help") // Help command.
                                 .executes(context -> displayHelpMessage(context.getSource()))
+                        )
+                        .then (Commands.literal("export")
+                                .executes(context -> exportDataCommand(context.getSource()))
                         )
         );
         // Register a shorter alias for convenience: /vx
@@ -143,6 +148,12 @@ public class VortexCommands {
         source.sendSuccess(() -> Component.literal("-/vx summary: Same as /vx"), false);
         source.sendSuccess(() -> Component.literal("-/vx clear: Resets all in-memory usage statistics."), false);
         source.sendSuccess(() -> Component.literal("-/vx help: Displays this help message."), false);
+        return 1;
+    }
+
+    private static int exportDataCommand(CommandSourceStack source){
+        DataExporter.exportCommand();
+        source.sendSuccess(() -> Component.literal("Vortex data exported to content directory."), false);
         return 1;
     }
 }

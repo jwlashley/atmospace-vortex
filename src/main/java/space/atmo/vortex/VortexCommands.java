@@ -39,6 +39,9 @@ public class VortexCommands {
                                     return 1;
                                 })
                         )
+                        .then(Commands.literal("help") // Help command.
+                                .executes(context -> displayHelpMessage(context.getSource()))
+                        )
         );
         // Register a shorter alias for convenience: /vx
         dispatcher.register(Commands.literal("vx")
@@ -129,6 +132,17 @@ public class VortexCommands {
         displayMostUsed(source, VortexTracker.entityDamageCounts, "Entity Damage");
         displayLeastUsed(source, VortexTracker.entityDamageCounts, "Entity Damage");
 
+        return 1;
+    }
+
+    private static int displayHelpMessage(CommandSourceStack source){
+        source.sendSuccess(() -> Component.literal("--- Vortex Mod Help ---"), false);
+        source.sendSuccess(() -> Component.literal("Vortex helps server administrators understand and optimize their modded servers."), false);
+        source.sendSuccess(() -> Component.literal("Available Commands:"), false);
+        source.sendSuccess(() -> Component.literal("-/vortex or /vx (alias): Displays a comprehensive summary of mod usage statistics in chat."), false);
+        source.sendSuccess(() -> Component.literal("-/vx summary: Same as /vx"), false);
+        source.sendSuccess(() -> Component.literal("-/vx clear: Resets all in-memory usage statistics."), false);
+        source.sendSuccess(() -> Component.literal("-/vx help: Displays this help message."), false);
         return 1;
     }
 }

@@ -1,7 +1,6 @@
 package space.atmo.vortex;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Manages the in-memory storage for mod usage statistics.
@@ -40,6 +39,33 @@ public class VortexTracker {
         recipeCraftCounts.clear();
         entityDamageCounts.clear();
         System.out.println("Vortex: All collected usage data has been cleared.");
+    }
+
+    // Gathering all mods that have recorded interactions.
+    public static synchronized Set<String> getInteractedModIds(){
+        Set<String> interactedMods = new HashSet<>();
+        interactedMods.addAll(blockRightClickCounts.keySet());
+        interactedMods.addAll(itemRightClickCounts.keySet());
+        interactedMods.addAll(recipeCraftCounts.keySet());
+        interactedMods.addAll(entityDamageCounts.keySet());
+        return interactedMods;
+    }
+
+
+    /**
+     * Compare a list of installed modIDs against our incremented modIDs to find mods that have not been used by players*.
+     * *In a way that vortex tracks. - Some mods might not use interactions that we track and won't show up as interacted with.
+     */
+    public static synchronized Set<String> getUnusedModIds(Set<String> allinstalledModIds){
+        if(allinstalledModIds == null){
+            System.err.println("Vortex:allInstalledModIds cannot be null.");
+            return Collections.emptySet();
+        }
+        Set<String> interactedModIds = getInteractedModIds();
+        Set<String> unusedModIds = new HashSet<>(allinstalledModIds);
+        unusedModIds.removeAll(interactedModIds);
+        unusedModIds.removeAll(interactedModIds);
+        return unusedModIds;
     }
 }
 

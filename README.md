@@ -34,7 +34,7 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 
 * **`VortexEventHandler.java`:** Listens for and processes specific in-game events (interactions, crafting, damage), filtering out vanilla content.
 
-* **`VortexCommands.java`:** Defines and handles the `/vortex` in-game commands for summaries and data clearing.
+* **`VortexCommands.java`:** Defines and handles the `/vortex` in-game commands.
 
 * **`DataExporter.java`:** Saves all collected usage data to a CSV file when requested or when the server stops.
 
@@ -51,6 +51,8 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 * **In-Game Summary:** Type `/vortex` or `/vx` (OP level 2+).
 
 * **Clear Data:** Use `/vortex clear`.
+
+* **See Unused Mods:** Use `/vortex unused`.
 
 * **CSV Reports:** Find `vortex_mod_usage_data_MM-DD-YYYY.csv` in `config/vortex/` after running the `/vx export` server shutdown.
 

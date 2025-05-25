@@ -64,7 +64,6 @@ public class VortexTracker {
         Set<String> interactedModIds = getInteractedModIds();
         Set<String> unusedModIds = new HashSet<>(allinstalledModIds);
         unusedModIds.removeAll(interactedModIds);
-        unusedModIds.removeAll(interactedModIds);
         return unusedModIds;
     }
 }

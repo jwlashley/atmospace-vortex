@@ -40,7 +40,7 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 
 ## Installation (for Server Administrators)
 
-1.  **Download:** Get the latest `vortex.jar` that matches your game version from Modrinth or CurseForge (pending moderation approval)
+1.  **Download:** Get the latest `vortex.jar` that matches your game version from [Modrinth](https://modrinth.com/mod/atmospace-vortex).
 
 3.  **Place:** Drop the JAR into your NeoForge 1.21.1 server's `mods` folder.
 

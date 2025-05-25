@@ -71,6 +71,16 @@ Contributions are welcome! Report bugs, suggest features, or submit pull request
 Keep in mind a general sense of professional etiquette when collaborating within this repository. No one should be made to feel lesser due to lack of expertise on a subject.
 Please look over the [Contribution Guide](https://github.com/jwlashley/atmospace-vortex/blob/main/CONTRIBUTING.md) or [Community Code of Conduct](https://github.com/jwlashley/atmospace-vortex/tree/main?tab=coc-ov-file) if you need further explanation of this.
 
+## Roadmap
+
+Vortex is currently in a state of active development in which features are still being added to the mod to make it a fully-fledged utility for modded server administrators to utilize on all of their servers.
+During this stage of development features may be added, changed, or removed at any time.
+
+The below features are currently planned for development and release:
+
+* **Data expansion:** We are looking into expanding the data that we collect to allow admins to get a better overall picture of their modpack.
+* **Vortex-Dataview:** It is in the plans to develop a web panel for admins to be able to explore their data more easily and allow them to get the granularity of data required to make important decisions.
+
 ## License
 
 This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). See the `LICENSE` file for details.

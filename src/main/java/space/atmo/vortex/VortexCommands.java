@@ -5,13 +5,13 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands; 
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
+import net.neoforged.fml.ModList;
+
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static space.atmo.vortex.DataExporter.exportCommand;
 
 /**
  * Registers and handles in-game commands for the Vortex mod.
@@ -47,6 +47,9 @@ public class VortexCommands {
                         )
                         .then (Commands.literal("export")
                                 .executes(context -> exportDataCommand(context.getSource()))
+                        )
+                        .then (Commands.literal("unused")
+                                .executes(context -> getUnusedModsCommand(context.getSource()))
                         )
         );
         // Register a shorter alias for convenience: /vx
@@ -147,6 +150,8 @@ public class VortexCommands {
         source.sendSuccess(() -> Component.literal("Available Commands:"), false);
         source.sendSuccess(() -> Component.literal("- /vx summary: Same as /vx"), false);
         source.sendSuccess(() -> Component.literal("- /vx clear: Resets all in-memory usage statistics."), false);
+        source.sendSuccess(() -> Component.literal("- /vx export: Exports current tracking data to a csv file in your config directory."), false);
+        source.sendSuccess(() -> Component.literal("- /vx unused: Lists mods with no tracked interactions."), false);
         source.sendSuccess(() -> Component.literal("- /vx help: Displays this help message."), false);
         return 1;
     }
@@ -154,6 +159,30 @@ public class VortexCommands {
     private static int exportDataCommand(CommandSourceStack source){
         DataExporter.exportCommand(source.getServer());
         source.sendSuccess(() -> Component.literal("Vortex data exported to content directory."), false);
+        return 1;
+    }
+
+
+    private static int getUnusedModsCommand(CommandSourceStack source){
+
+        Set<String> allInstalledModIds = ModList.get().getMods().stream()
+                .map(mod -> mod.getModId()) //Working with IModInfo only once so not going to reference the method.
+                .collect(Collectors.toSet());
+
+        //Exclude Minecraft (vanilla), NeoForge (modloader) and Vortex ModIDs.
+        allInstalledModIds.remove("minecraft");
+        allInstalledModIds.remove(Vortex.MOD_ID);
+        allInstalledModIds.remove("neoforge");
+
+
+        Set<String> unusedMods = VortexTracker.getUnusedModIds(allInstalledModIds);
+
+        if(unusedMods.isEmpty()){
+            source.sendSuccess(() -> Component.literal("Vortex: No unused mods found."), false);
+        } else{
+            String modList = String.join(",",unusedMods);
+            source.sendSuccess(() -> Component.literal("Vortex: Unused mods: " + modList), false);
+        }
         return 1;
     }
 }

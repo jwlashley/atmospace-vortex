@@ -60,6 +60,8 @@ public class DataExporter {
             writeMapToCSV(writer, VortexTracker.itemRightClickCounts, "ItemRightClick");
             writeMapToCSV(writer, VortexTracker.recipeCraftCounts, "CraftingOutput");
             writeMapToCSV(writer, VortexTracker.entityDamageCounts, "EntityDamage");
+            writeMapToCSV(writer, VortexTracker.commandUsageCounts, "CommandUsage");
+            writeMapToCSV(writer, VortexTracker.chunkGenerationCounts, "ChunkGeneration");
 
             System.out.println("Vortex: Mod usage data successfully saved to: " + outputFile.toAbsolutePath());
 

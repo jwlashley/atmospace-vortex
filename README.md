@@ -1,7 +1,7 @@
 # Vortex: NeoForge Mod Usage Analyzer 
 <p align="left">
   <a href="https://github.com/jwlashley/atmospace-vortex"><img src="https://badgen.net/badge/Development/Active/green" /></a>
-  <a href=""><img src="https://badgen.net/badge/Stable/1.1.4/blue" /></a>
+  <a href=""><img src="https://badgen.net/badge/Stable/1.2.1/blue" /></a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://badgen.net/badge/License/GPL3/red" /></a>
   
 </p>

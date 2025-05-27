@@ -14,6 +14,8 @@ public class VortexTracker {
     public static final Map<String, Integer> itemRightClickCounts = new HashMap<>();
     public static final Map<String, Integer> recipeCraftCounts = new HashMap<>();
     public static final Map<String, Integer> entityDamageCounts = new HashMap<>();
+    public static final Map<String, Integer> chunkGenerationCounts = new HashMap<>();
+    public static final Map<String, Integer> commandUsageCounts = new HashMap<>();
 
     /**
      * Increments the count for a given mod ID in the specified map.

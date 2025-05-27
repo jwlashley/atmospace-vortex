@@ -23,7 +23,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 
 
 import java.util.Collections;

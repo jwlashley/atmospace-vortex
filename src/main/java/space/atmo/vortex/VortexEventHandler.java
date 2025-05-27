@@ -1,6 +1,8 @@
 // src/main/java/com/yourname/vortex/VortexEventHandler.java
 package space.atmo.vortex;
 
+import com.mojang.brigadier.ParseResults;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -8,13 +10,25 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.minecraft.core.registries.Registries;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Handles various in-game events to track mod usage.
@@ -125,6 +139,62 @@ public class VortexEventHandler { // RENAMED: ModUsageEventHandler -> VortexEven
             if (!"minecraft".equals(modId)) {
                 VortexTracker.incrementCount(VortexTracker.entityDamageCounts, modId); // RENAMED: ModUsageTracker -> VortexTracker
             }
+        }
+    }
+
+    /**
+     * Event handling for tracking chunk generation by mods with world generation.
+     */
+    private static final Set<ChunkPos> processedChunks = Collections.synchronizedSet(new HashSet<>());
+
+    @SubscribeEvent
+    public static void onChunkGeneration(ChunkEvent.Load event){
+        if (event.getLevel().isClientSide()){
+            return;
+        }
+
+        if (event.getChunk() instanceof LevelChunk chunk){
+
+            ChunkPos chunkPos = chunk.getPos(); // Get the chunk's position
+
+            if (processedChunks.contains(chunkPos)){ // Check if the chunk has been previously processed to avoid duplicate data.
+                return;
+            }
+
+            Holder<Biome> biomeHolder = chunk.getNoiseBiome(chunk.getPos().getMinBlockX() >> 2, chunk.getMinBuildHeight() >> 2, chunk.getPos().getMinBlockZ() >> 2);
+
+            biomeHolder.unwrapKey().ifPresent(biomeKey -> {
+                ResourceLocation biomeID = biomeKey.location();
+                String modID = biomeID.getNamespace();
+
+            if (!"minecraft".equals(modID)) {
+                VortexTracker.incrementCount(VortexTracker.chunkGenerationCounts, modID);
+            }
+            });
+
+            processedChunks.add(chunkPos);
+
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onCommandExecution(CommandEvent event) {
+        ParseResults<CommandSourceStack> parseResults = event.getParseResults();
+
+
+        if (parseResults.getContext().getSource().getServer() == null) {
+            return;
+        }
+
+        // attempt to get the mod id by listening to the command and getting the root ex: /vortex summary will grab vortex
+
+        String modID = parseResults.getReader().getString().split(" ")[0].replace("/", "");
+
+        if (modID != null && !"minecraft".equals(modID)) {
+            VortexTracker.incrementCount(VortexTracker.commandUsageCounts, modID);
+
+
         }
     }
 }

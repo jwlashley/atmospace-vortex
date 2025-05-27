@@ -40,6 +40,8 @@ public class VortexTracker {
         itemRightClickCounts.clear();
         recipeCraftCounts.clear();
         entityDamageCounts.clear();
+        chunkGenerationCounts.clear();
+        commandUsageCounts.clear();
         System.out.println("Vortex: All collected usage data has been cleared.");
     }
 
@@ -50,6 +52,8 @@ public class VortexTracker {
         interactedMods.addAll(itemRightClickCounts.keySet());
         interactedMods.addAll(recipeCraftCounts.keySet());
         interactedMods.addAll(entityDamageCounts.keySet());
+        interactedMods.addAll(chunkGenerationCounts.keySet());
+        interactedMods.addAll(commandUsageCounts.keySet());
         return interactedMods;
     }
 

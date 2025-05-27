@@ -7,9 +7,8 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate; // Import for date
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter; // Import for date formatting
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 /**

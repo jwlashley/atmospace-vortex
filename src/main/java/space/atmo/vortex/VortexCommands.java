@@ -6,9 +6,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands; 
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
+import org.spongepowered.include.com.google.gson.Gson;
 
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -184,5 +190,96 @@ public class VortexCommands {
             source.sendSuccess(() -> Component.literal("Vortex: Unused mods: " + modList), false);
         }
         return 1;
+    }
+
+    private static int exportToDataViewer(CommandSourceStack source){
+        // Get the data
+        Map<String, Map<String, Integer>> dataByCategory = new HashMap<>();
+        dataByCategory.put("Block Right Clicks", VortexTracker.blockRightClickCounts);
+        dataByCategory.put("Item Right Clicks", VortexTracker.itemRightClickCounts);
+        dataByCategory.put("Recipe Crafts", VortexTracker.recipeCraftCounts);
+        dataByCategory.put("Entity Damage", VortexTracker.entityDamageCounts);
+        dataByCategory.put("Chunks Generated", VortexTracker.chunkGenerationCounts);
+        dataByCategory.put("Command Interactions", VortexTracker.commandUsageCounts);
+
+        // Creating JSON Structure
+        Map<String, ModInteractionDetails> dataByMod = new HashMap<>();
+
+        for (Map.Entry<String, Map<String, Integer>> categoryEntry : dataByCategory.entrySet()) {
+            String categoryName = categoryEntry.getKey();
+            Map<String, Integer> categoryData = categoryEntry.getValue();
+
+            if (categoryData == null || categoryData.isEmpty()) {
+                continue;
+            }
+
+            for(Map.Entry<String, Integer> modEntry : categoryData.entrySet()) {
+                String modId = modEntry.getKey();
+                int countInThisCategory= modEntry.getValue();
+
+                ModInteractionDetails modDetails = dataByMod.computeIfAbsent(modID, k -> new ModInteractionDetails());
+
+                modDetails.totalInteractions += countInThisCategory;
+
+                modDetails.interactionBreakdown.put(categoryName, countInThisCategory);
+            }
+            String jsonPayload = new Gson().toJson(dataByMod);
+
+            // 5. Perform the Web Request (Asynchronously)
+            // Ensure you replace YOUR_VERCEL_PROJECT_URL.vercel.app with your actual Vercel project URL
+            String vercelApiUrl = "https://YOUR_VERCEL_PROJECT_URL.vercel.app/api/submit";
+            // It's a good idea to make this URL configurable via VortexConfig later
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(vercelApiUrl))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                    .build();
+
+            source.sendSuccess(() -> Component.literal("Vortex: Uploading data..."), false);
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(response -> {
+                        // Handle different HTTP status codes from Vercel
+                        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                            return response.body();
+                        } else {
+                            throw new RuntimeException("Failed to upload report. Server responded with " + response.statusCode() + ": " + response.body());
+                        }
+                    })
+                    .thenAccept(responseBody -> {
+                        try {
+                            // Assuming the response from Vercel API is JSON like: {"id":"xyz123"}
+                            Map<String, String> responseMap = new Gson().fromJson(responseBody, Map.class);
+                            String reportId = responseMap.get("id");
+
+                            if (reportId == null || reportId.isEmpty()) {
+                                throw new RuntimeException("Vercel API did not return a report ID.");
+                            }
+
+                            // Construct the final URL for the user to view the report
+                            String finalUrl = "https://YOUR_VERCEL_PROJECT_URL.vercel.app/view.html?id=" + reportId;
+                            // Again, this base URL should ideally be configurable
+
+                            source.sendSuccess(() -> Component.literal("Vortex Report Link: " + finalUrl), true); // 'true' to broadcast to OPs
+                        } catch (Exception e) { // Catch parsing errors or missing ID
+                            source.sendFailure(Component.literal("Vortex: Error processing response from Vercel: " + e.getMessage()));
+                            System.err.println("Vortex: Error parsing Vercel response: " + responseBody + " | Exception: " + e);
+                        }
+                    })
+                    .exceptionally(e -> {
+                        source.sendFailure(Component.literal("Vortex: Failed to generate web report. Check server console. " + e.getMessage()));
+                        System.err.println("Vortex: Failed to send data to Vercel: " + e);
+                        return null;
+                    });
+
+            return 1; // Command executed
+
+        }
+
+
+
+
     }
 }

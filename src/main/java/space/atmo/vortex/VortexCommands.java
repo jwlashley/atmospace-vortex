@@ -1,14 +1,12 @@
 package space.atmo.vortex;
 
+import com.google.gson.Gson;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands; 
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
-import org.spongepowered.include.com.google.gson.Gson;
-
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -25,6 +23,12 @@ import java.util.stream.Collectors;
  * and a command to clear collected data.
  */
 public class VortexCommands {
+
+    // Define the ModInteractionDetails class here as a static nested class
+    public static class ModInteractionDetails {
+        public int totalInteractions = 0;
+        public Map<String, Integer> interactionBreakdown = new HashMap<>();
+    }
 
     /**
      * Registers all commands for the Vortex mod with the Minecraft command dispatcher.
@@ -56,6 +60,9 @@ public class VortexCommands {
                         )
                         .then (Commands.literal("unused")
                                 .executes(context -> getUnusedModsCommand(context.getSource()))
+                        )
+                        .then (Commands.literal("dataviewer")
+                                .executes(context -> exportToDataViewer(context.getSource()))
                         )
         );
         // Register a shorter alias for convenience: /vx
@@ -213,21 +220,22 @@ public class VortexCommands {
                 continue;
             }
 
-            for(Map.Entry<String, Integer> modEntry : categoryData.entrySet()) {
+            for (Map.Entry<String, Integer> modEntry : categoryData.entrySet()) {
                 String modId = modEntry.getKey();
-                int countInThisCategory= modEntry.getValue();
+                int countInThisCategory = modEntry.getValue();
 
-                ModInteractionDetails modDetails = dataByMod.computeIfAbsent(modID, k -> new ModInteractionDetails());
+                ModInteractionDetails modDetails = dataByMod.computeIfAbsent(modId, k -> new ModInteractionDetails());
 
                 modDetails.totalInteractions += countInThisCategory;
 
                 modDetails.interactionBreakdown.put(categoryName, countInThisCategory);
             }
+        }
             String jsonPayload = new Gson().toJson(dataByMod);
 
             // 5. Perform the Web Request (Asynchronously)
             // Ensure you replace YOUR_VERCEL_PROJECT_URL.vercel.app with your actual Vercel project URL
-            String vercelApiUrl = "https://YOUR_VERCEL_PROJECT_URL.vercel.app/api/submit";
+            String vercelApiUrl = "vortex-dataview.vercel.app/api/submit";
             // It's a good idea to make this URL configurable via VortexConfig later
 
             HttpClient client = HttpClient.newHttpClient();
@@ -259,8 +267,8 @@ public class VortexCommands {
                             }
 
                             // Construct the final URL for the user to view the report
-                            String finalUrl = "https://YOUR_VERCEL_PROJECT_URL.vercel.app/view.html?id=" + reportId;
-                            // Again, this base URL should ideally be configurable
+                            String finalUrl = "vortex-dataview.vercel.app" + reportId;
+
 
                             source.sendSuccess(() -> Component.literal("Vortex Report Link: " + finalUrl), true); // 'true' to broadcast to OPs
                         } catch (Exception e) { // Catch parsing errors or missing ID

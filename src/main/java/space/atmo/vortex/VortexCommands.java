@@ -235,7 +235,7 @@ public class VortexCommands {
 
             // 5. Perform the Web Request (Asynchronously)
             // Ensure you replace YOUR_VERCEL_PROJECT_URL.vercel.app with your actual Vercel project URL
-            String vercelApiUrl = "vortex-dataview.vercel.app/api/submit";
+            String vercelApiUrl = "https://vortex-dataview.vercel.app/api/submit";
             // It's a good idea to make this URL configurable via VortexConfig later
 
             HttpClient client = HttpClient.newHttpClient();
@@ -267,7 +267,7 @@ public class VortexCommands {
                             }
 
                             // Construct the final URL for the user to view the report
-                            String finalUrl = "vortex-dataview.vercel.app" + reportId;
+                            String finalUrl = "https://vortex-dataview.vercel.app/index.html?id=" + reportId;
 
 
                             source.sendSuccess(() -> Component.literal("Vortex Report Link: " + finalUrl), true); // 'true' to broadcast to OPs
@@ -290,4 +290,3 @@ public class VortexCommands {
 
 
     }
-}

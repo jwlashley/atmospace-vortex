@@ -3,10 +3,14 @@ package space.atmo.vortex;
 import com.google.gson.Gson;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands; 
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -269,8 +273,16 @@ public class VortexCommands {
                             // Construct the final URL for the user to view the report
                             String finalUrl = "https://vortex-dataview.vercel.app/index.html?id=" + reportId;
 
+                            Component linkComponent = Component.literal(finalUrl)
+                                            .setStyle(Style.EMPTY
+                                                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, finalUrl))
+                                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to view report")))
+                                                    .withColor(ChatFormatting.GREEN)
+                                                    .withUnderlined(true)
+                                            );
 
-                            source.sendSuccess(() -> Component.literal("Vortex Report Link: " + finalUrl), true); // 'true' to broadcast to OPs
+
+                            source.sendSuccess(() -> Component.literal("Vortex Report Link: ").append(linkComponent), true); // 'true' to broadcast to OPs
                         } catch (Exception e) { // Catch parsing errors or missing ID
                             source.sendFailure(Component.literal("Vortex: Error processing response from Vercel: " + e.getMessage()));
                             System.err.println("Vortex: Error parsing Vercel response: " + responseBody + " | Exception: " + e);

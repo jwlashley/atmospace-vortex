@@ -271,7 +271,7 @@ public class VortexCommands {
                             }
 
                             // Construct the final URL for the user to view the report
-                            String finalUrl = "https://vortex-dataview.vercel.app/index.html?id=" + reportId;
+                            String finalUrl = "https://vortex-dataview.vercel.app/?id=" + reportId;
 
                             Component linkComponent = Component.literal(finalUrl)
                                             .setStyle(Style.EMPTY

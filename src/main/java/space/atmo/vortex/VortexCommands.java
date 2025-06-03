@@ -169,6 +169,7 @@ public class VortexCommands {
         source.sendSuccess(() -> Component.literal("- /vx clear: Resets all in-memory usage statistics."), false);
         source.sendSuccess(() -> Component.literal("- /vx export: Exports current tracking data to a csv file in your config directory."), false);
         source.sendSuccess(() -> Component.literal("- /vx unused: Lists mods with no tracked interactions."), false);
+        source.sendSuccess(() -> Component.literal("- /vx dataview: View your server's data in the dataviewer for easier analyzing."), false);
         source.sendSuccess(() -> Component.literal("- /vx help: Displays this help message."), false);
         return 1;
     }

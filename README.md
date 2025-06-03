@@ -1,11 +1,12 @@
 # Vortex: NeoForge Mod Usage Analyzer 
-![vortex banner](vortexbanner.png)
 <p align="left">
   <a href="https://github.com/jwlashley/atmospace-vortex"><img src="https://badgen.net/badge/Development/Active/green" /></a>
   <a href=""><img src="https://badgen.net/badge/Stable/2.0.0/blue" /></a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="https://badgen.net/badge/License/GPL3/red" /></a>
-  
 </p>
+
+![vortex banner](vortexbanner.png)
+
 
 Vortex is a server-side NeoForge mod that helps administrators understand and optimize their modpacks by tracking actual player engagement with modded content. Get clear data to streamline your modpack, reduce server load, and enhance player experience.
 

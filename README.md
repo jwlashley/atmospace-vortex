@@ -19,6 +19,8 @@ Large modpacks can suffer from unused mods, leading to unnecessary server load a
 * **Vanilla Filter:** Automatically ignores vanilla Minecraft content for focused data.
 
 * **In-Game Summaries:** Use `/vortex` or `/vx` (OP 2+) for instant usage overviews in chat.
+  
+* **Dataview Web Panel:** Use `/vortex dataview` or `/vx dataview` for a URL that will allow you to view the data that Vortex has collected in an easy to use web-panel.
 
 * **CSV Export:** Generates detailed, timestamped CSV reports (`config/vortex/`) upon server command and shutdown for external analysis.
 
@@ -49,6 +51,8 @@ Vortex leverages the NeoForge event system. Its modular design separates concern
 ## Usage (for Server Administrators)
 
 * **In-Game Summary:** Type `/vortex` or `/vx` (OP level 2+).
+
+* **Dataview:** Type `/vortex dataview` or `/vx dataview` to get a link to the Dataview for your server.
 
 * **Clear Data:** Use `/vortex clear`.
 

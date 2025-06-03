@@ -1,4 +1,5 @@
 # Vortex: NeoForge Mod Usage Analyzer 
+![vortex banner](vortexbanner.png)
 <p align="left">
   <a href="https://github.com/jwlashley/atmospace-vortex"><img src="https://badgen.net/badge/Development/Active/green" /></a>
   <a href=""><img src="https://badgen.net/badge/Stable/2.0.0/blue" /></a>

@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands; 
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 import net.minecraft.network.chat.ClickEvent;
@@ -42,37 +42,42 @@ public class VortexCommands {
      * @param dispatcher The CommandDispatcher instance.
      */
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralCommandNode<CommandSourceStack> modUsageCommand = dispatcher.register(
-                Commands.literal(Vortex.MOD_ID) // Base command: /vortex
-                        .requires(source -> source.hasPermission(2)) // Requires Op level 2 or higher to run these commands
-                        .executes(context -> displayAllSummaries(context.getSource())) // Default execution for /vortex
-                        .then(Commands.literal("summary") // Explicit /vortex summary command
-                                .executes(context -> displayAllSummaries(context.getSource()))
-                        )
-                        .then(Commands.literal("clear") // Command to clear all collected data in memory
-                                .executes(context -> {
-                                    VortexTracker.clearAllData(); // Call the clear method from ModUsageTracker
-                                    context.getSource().sendSuccess(() -> Component.literal("Vortex: All collected usage data has been cleared."), true);
-                                    return 1;
-                                })
-                        )
-                        .then(Commands.literal("help") // Help command.
-                                .executes(context -> displayHelpMessage(context.getSource()))
-                        )
-                        .then (Commands.literal("export")
-                                .executes(context -> exportDataCommand(context.getSource()))
-                        )
-                        .then (Commands.literal("unused")
-                                .executes(context -> getUnusedModsCommand(context.getSource()))
-                        )
-                        .then (Commands.literal("dataviewer")
-                                .executes(context -> exportToDataViewer(context.getSource()))
-                        )
-        );
-        // Register a shorter alias for convenience: /vx
+        // 1. Create a builder for the logic
+        var vortexBuilder = Commands.literal(Vortex.MOD_ID)
+                .requires(source -> source.hasPermission(2))
+                .executes(context -> displayAllSummaries(context.getSource()))
+                .then(Commands.literal("summary")
+                        .executes(context -> displayAllSummaries(context.getSource()))
+                )
+                .then(Commands.literal("clear")
+                        .executes(context -> {
+                            VortexTracker.clearAllData();
+                            context.getSource().sendSuccess(() -> Component.literal("Vortex: All collected usage data has been cleared."), true);
+                            return 1;
+                        })
+                )
+                .then(Commands.literal("help")
+                        .executes(context -> displayHelpMessage(context.getSource()))
+                )
+                .then(Commands.literal("export")
+                        .executes(context -> exportDataCommand(context.getSource()))
+                )
+                .then(Commands.literal("unused")
+                        .executes(context -> getUnusedModsCommand(context.getSource()))
+                )
+                .then(Commands.literal("dataviewer")
+                        .executes(context -> exportToDataViewer(context.getSource()))
+                );
+
+        // 2. Register the main command
+        LiteralCommandNode<CommandSourceStack> mainNode = dispatcher.register(vortexBuilder);
+
+        // 3. Register the alias and explicitly redirect to the main node
+        // This ensures /vx and /vx <subcommand> both work correctly.
         dispatcher.register(Commands.literal("vx")
-                .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
-                .redirect(modUsageCommand));
+                .requires(source -> source.hasPermission(2))
+                .executes(mainNode.getCommand()) // This fixes the base /vx command
+                .redirect(mainNode));
     }
 
     /**
@@ -174,6 +179,77 @@ public class VortexCommands {
         return 1;
     }
 
+    private static int exportToDataViewer(CommandSourceStack source) {
+        Map<String, Map<String, Integer>> snapshot = new HashMap<>();
+        int totalInteractions = 0;
+
+
+        totalInteractions += captureMap(snapshot, "Block Right Clicks", VortexTracker.blockRightClickCounts);
+        totalInteractions += captureMap(snapshot, "Item Right Clicks", VortexTracker.itemRightClickCounts);
+        totalInteractions += captureMap(snapshot, "Recipe Crafts", VortexTracker.recipeCraftCounts);
+        totalInteractions += captureMap(snapshot, "Entity Damage", VortexTracker.entityDamageCounts);
+        totalInteractions += captureMap(snapshot, "Chunks Generated", VortexTracker.chunkGenerationCounts);
+        totalInteractions += captureMap(snapshot, "Command Interactions", VortexTracker.commandUsageCounts);
+
+        if (totalInteractions == 0) {
+            source.sendFailure(Component.literal("Vortex: No data to export."));
+            return 0;
+        }
+
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("total", totalInteractions);
+        payload.put("data", snapshot);
+        String jsonPayload = new Gson().toJson(payload);
+
+
+        String apiUrl = "https://oi17t22tfa.execute-api.us-east-1.amazonaws.com/prod/submit";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Content-Type", "application/json")
+                .header("x-api-key", "5EHrT098fF3PLfxBuxXQx6lQJ4qX8SYR49cl0ciu")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
+
+        source.sendSuccess(() -> Component.literal("Vortex: Uploading report..."), false);
+
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    if (response.statusCode() == 200) {
+                        Map<String, String> resp = new Gson().fromJson(response.body(), Map.class);
+                        String reportId = resp.get("id");
+                        String finalUrl = "https://vortex-dataview.vercel.app/?id=" + reportId;
+
+                        Component link = Component.literal(finalUrl).setStyle(Style.EMPTY
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, finalUrl))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to view report")))
+                                .withColor(ChatFormatting.GREEN).withUnderlined(true));
+
+                        source.sendSuccess(() -> Component.literal("Vortex Report Link: ").append(link), true);
+                    } else {
+                        source.sendFailure(Component.literal("Vortex: Upload failed (HTTP " + response.statusCode() + ")"));
+                    }
+                })
+                .exceptionally(e -> {
+                    source.sendFailure(Component.literal("Vortex: Connection failed."));
+                    return null;
+                });
+
+        return 1;
+    }
+
+    private static int captureMap(Map<String, Map<String, Integer>> target, String key, Map<String, Integer> sourceMap) {
+        synchronized (sourceMap) { // Lock the map while we copy it
+            if (sourceMap.isEmpty()) return 0;
+            Map<String, Integer> copy = new HashMap<>(sourceMap);
+            target.put(key, copy);
+            return copy.values().stream().mapToInt(Integer::intValue).sum();
+        }
+    }
+
     private static int exportDataCommand(CommandSourceStack source){
         DataExporter.exportCommand(source.getServer());
         source.sendSuccess(() -> Component.literal("Vortex data exported to content directory."), false);
@@ -204,102 +280,4 @@ public class VortexCommands {
         return 1;
     }
 
-    private static int exportToDataViewer(CommandSourceStack source){
-        // Get the data
-        Map<String, Map<String, Integer>> dataByCategory = new HashMap<>();
-        dataByCategory.put("Block Right Clicks", VortexTracker.blockRightClickCounts);
-        dataByCategory.put("Item Right Clicks", VortexTracker.itemRightClickCounts);
-        dataByCategory.put("Recipe Crafts", VortexTracker.recipeCraftCounts);
-        dataByCategory.put("Entity Damage", VortexTracker.entityDamageCounts);
-        dataByCategory.put("Chunks Generated", VortexTracker.chunkGenerationCounts);
-        dataByCategory.put("Command Interactions", VortexTracker.commandUsageCounts);
-
-        // Creating JSON Structure
-        Map<String, ModInteractionDetails> dataByMod = new HashMap<>();
-
-        for (Map.Entry<String, Map<String, Integer>> categoryEntry : dataByCategory.entrySet()) {
-            String categoryName = categoryEntry.getKey();
-            Map<String, Integer> categoryData = categoryEntry.getValue();
-
-            if (categoryData == null || categoryData.isEmpty()) {
-                continue;
-            }
-
-            for (Map.Entry<String, Integer> modEntry : categoryData.entrySet()) {
-                String modId = modEntry.getKey();
-                int countInThisCategory = modEntry.getValue();
-
-                ModInteractionDetails modDetails = dataByMod.computeIfAbsent(modId, k -> new ModInteractionDetails());
-
-                modDetails.totalInteractions += countInThisCategory;
-
-                modDetails.interactionBreakdown.put(categoryName, countInThisCategory);
-            }
-        }
-            String jsonPayload = new Gson().toJson(dataByMod);
-
-            // 5. Perform the Web Request (Asynchronously)
-            // Ensure you replace YOUR_VERCEL_PROJECT_URL.vercel.app with your actual Vercel project URL
-            String vercelApiUrl = "https://vortex-dataview.vercel.app/api/submit";
-            // It's a good idea to make this URL configurable via VortexConfig later
-
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(vercelApiUrl))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build();
-
-            source.sendSuccess(() -> Component.literal("Vortex: Uploading data..."), false);
-
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(response -> {
-                        // Handle different HTTP status codes from Vercel
-                        if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                            return response.body();
-                        } else {
-                            throw new RuntimeException("Failed to upload report. Server responded with " + response.statusCode() + ": " + response.body());
-                        }
-                    })
-                    .thenAccept(responseBody -> {
-                        try {
-                            // Assuming the response from Vercel API is JSON like: {"id":"xyz123"}
-                            Map<String, String> responseMap = new Gson().fromJson(responseBody, Map.class);
-                            String reportId = responseMap.get("id");
-
-                            if (reportId == null || reportId.isEmpty()) {
-                                throw new RuntimeException("Vercel API did not return a report ID.");
-                            }
-
-                            // Construct the final URL for the user to view the report
-                            String finalUrl = "https://vortex-dataview.vercel.app/?id=" + reportId;
-
-                            Component linkComponent = Component.literal(finalUrl)
-                                            .setStyle(Style.EMPTY
-                                                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, finalUrl))
-                                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to view report")))
-                                                    .withColor(ChatFormatting.GREEN)
-                                                    .withUnderlined(true)
-                                            );
-
-
-                            source.sendSuccess(() -> Component.literal("Vortex Report Link: ").append(linkComponent), true); // 'true' to broadcast to OPs
-                        } catch (Exception e) { // Catch parsing errors or missing ID
-                            source.sendFailure(Component.literal("Vortex: Error processing response from Vercel: " + e.getMessage()));
-                            System.err.println("Vortex: Error parsing Vercel response: " + responseBody + " | Exception: " + e);
-                        }
-                    })
-                    .exceptionally(e -> {
-                        source.sendFailure(Component.literal("Vortex: Failed to generate web report. Check server console. " + e.getMessage()));
-                        System.err.println("Vortex: Failed to send data to Vercel: " + e);
-                        return null;
-                    });
-
-            return 1; // Command executed
-
-        }
-
-
-
-
-    }
+}
